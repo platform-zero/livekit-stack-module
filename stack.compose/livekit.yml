@@ -1,0 +1,40 @@
+services:
+  livekit:
+    image: livekit/livekit-server:v1.11.0
+    container_name: livekit
+    restart: unless-stopped
+    command:
+      - --config
+      - /etc/livekit/livekit.yaml
+    networks:
+      - caddy
+      - matrix-internal
+    ports:
+      - "7881:7881/tcp"
+      - "7882:7882/udp"
+    volumes:
+      - ./configs/livekit/livekit.yaml:/etc/livekit/livekit.yaml:ro
+
+  matrix-rtc-auth:
+    image: ghcr.io/element-hq/lk-jwt-service:0.4.4
+    container_name: matrix-rtc-auth
+    restart: unless-stopped
+    networks:
+      - caddy
+      - matrix-internal
+    depends_on:
+      caddy:
+        condition: service_started
+      livekit:
+        condition: service_started
+      synapse:
+        condition: service_healthy
+    environment:
+      LIVEKIT_URL: wss://matrix-rtc.${DOMAIN}/livekit/sfu
+      LIVEKIT_KEY: ${LIVEKIT_API_KEY}
+      LIVEKIT_SECRET: ${LIVEKIT_API_SECRET}
+      LIVEKIT_JWT_BIND: :8080
+      LIVEKIT_FULL_ACCESS_HOMESERVERS: matrix.${DOMAIN}
+      SSL_CERT_FILE: /ca/caddy-ca.crt
+    volumes:
+      - caddy_ca:/ca:ro

@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "livekit",
+  "repo": "livekit-stack-module",
+  "runtimeId": "livekit",
+  "lifecycle": "active",
+  "dependencies": [
+    "stack-foundation"
+  ],
+  "overlays": [
+    "stack.compose/livekit.yml",
+    "stack.config/livekit"
+  ]
+}
