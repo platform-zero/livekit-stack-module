@@ -1,0 +1,37 @@
+name: Module CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - dev
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Module validation
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out module
+        uses: actions/checkout@v4
+
+      - name: Validate module metadata
+        run: |
+          test -f stack.module.json
+          if [ -f tests/validate.sh ]; then
+            chmod +x tests/validate.sh
+            ./tests/validate.sh
+          else
+            printf 'No tests/validate.sh found in module, skipping\n'
+          fi
+
+      - name: Run optional smoke checks
+        run: |
+          if [ -x tests/smoke.sh ]; then
+            ./tests/smoke.sh
+          else
+            printf 'No tests/smoke.sh found in module, skipping\n'
+          fi
