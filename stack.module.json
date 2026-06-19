@@ -7,8 +7,18 @@
   "dependencies": [
     "stack-foundation"
   ],
+  "runtimeDependencies": [
+    "stack-foundation",
+    "synapse"
+  ],
+  "contracts": [
+    "module-contract"
+  ],
+  "smoke": "external-only",
+  "smokeUnsupportedReason": "requires generated bundle context, deployed networking, secrets, or service dependencies",
   "overlays": [
     "stack.compose/livekit.yml",
     "stack.config/livekit"
-  ]
+  ],
+  "testAssets": []
 }
