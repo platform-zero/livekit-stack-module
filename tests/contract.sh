@@ -40,15 +40,27 @@ if [ -d "$repo_root/stack.js" ]; then
   done < <(find "$repo_root/stack.js" -path '*/node_modules' -prune -o -name package.json -type f -print)
 fi
 if [ -d "$repo_root/stack.kotlin" ]; then
-  find "$repo_root/stack.kotlin" -name build.gradle.kts -type f -print -quit | grep -q . || {
-    printf '[module-contract] stack.kotlin exists but no build.gradle.kts was found\n' >&2
-    exit 1
-  }
+  if ! find "$repo_root/stack.kotlin" -name build.gradle.kts -type f -print -quit | grep -q .; then
+    python3 - "$metadata" <<'PY_CONTRACT_KOTLIN'
+import json
+import pathlib
+import sys
+metadata = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+if not any(path.startswith("stack.kotlin/") for path in metadata.get("overlays", [])):
+    raise SystemExit("[module-contract] stack.kotlin exists without build.gradle.kts and is not declared as overlay-only")
+PY_CONTRACT_KOTLIN
+  fi
 fi
 if [ -d "$repo_root/stack.containers" ]; then
-  find "$repo_root/stack.containers" -name Dockerfile -type f -print -quit | grep -q . || {
-    printf '[module-contract] stack.containers exists but no Dockerfile was found\n' >&2
-    exit 1
-  }
+  if ! find "$repo_root/stack.containers" -name Dockerfile -type f -print -quit | grep -q .; then
+    python3 - "$metadata" <<'PY_CONTRACT_CONTAINERS'
+import json
+import pathlib
+import sys
+metadata = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+if not any(path.startswith("stack.containers/") for path in metadata.get("overlays", [])):
+    raise SystemExit("[module-contract] stack.containers exists without Dockerfile and is not declared as overlay-only")
+PY_CONTRACT_CONTAINERS
+  fi
 fi
 printf '[module-contract] ok\n' >&2
