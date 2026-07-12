@@ -1,0 +1,44 @@
+{
+  "configuration": {
+    "schema": {
+      "additionalProperties": false,
+      "properties": {},
+      "type": "object"
+    }
+  },
+  "id": "livekit",
+  "overlays": [
+    "stack.compose/livekit.yml",
+    "stack.config/livekit"
+  ],
+  "provides": [
+    {
+      "capability": "module:livekit",
+      "version": "1"
+    }
+  ],
+  "requires": [
+    {
+      "capability": "module:stack-foundation",
+      "version": "1"
+    }
+  ],
+  "schemaVersion": 1,
+  "services": [
+    {
+      "name": "livekit",
+      "routes": [],
+      "volumes": []
+    },
+    {
+      "name": "matrix-rtc-auth",
+      "routes": [],
+      "volumes": []
+    }
+  ],
+  "verification": {
+    "commands": [
+      "test -f stack.module.json && test -f module.json"
+    ]
+  }
+}
