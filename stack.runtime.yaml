@@ -1,0 +1,48 @@
+---
+schemaVersion: 1
+module: "livekit"
+target: "apps"
+services:
+  livekit:
+    image: "livekit/livekit-server:v1.11.0"
+    containerName: "livekit"
+    lifecycle: "daemon"
+    updatePolicy: "registry"
+    placement: "rootful"
+    networks:
+    - "caddy"
+    - "matrix-internal"
+    volumes:
+    - "./configs/livekit/livekit.yaml:/etc/livekit/livekit.yaml:ro"
+    ports:
+    - "7881:7881/tcp"
+    - "7882:7882/udp"
+    command:
+    - "--config"
+    - "/etc/livekit/livekit.yaml"
+    restart: "unless-stopped"
+  matrix-rtc-auth:
+    image: "ghcr.io/element-hq/lk-jwt-service:0.4.4"
+    containerName: "matrix-rtc-auth"
+    lifecycle: "daemon"
+    updatePolicy: "registry"
+    placement: "rootful"
+    dependencies:
+      caddy: "started"
+      livekit: "started"
+      synapse: "healthy"
+    environment:
+      LIVEKIT_URL: "wss://matrix-rtc.${DOMAIN}/livekit/sfu"
+      LIVEKIT_KEY: "${LIVEKIT_API_KEY}"
+      LIVEKIT_SECRET: "${LIVEKIT_API_SECRET}"
+      LIVEKIT_JWT_BIND: ":8080"
+      LIVEKIT_FULL_ACCESS_HOMESERVERS: "matrix.${DOMAIN}"
+      SSL_CERT_FILE: "/ca/caddy-ca.crt"
+    networks:
+    - "caddy"
+    - "matrix-internal"
+    volumes:
+    - "caddy_ca:/ca:ro"
+    restart: "unless-stopped"
+networks: {}
+volumes: {}
