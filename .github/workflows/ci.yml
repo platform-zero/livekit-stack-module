@@ -21,12 +21,9 @@ jobs:
       - name: Validate module metadata
         run: |
           test -f stack.module.json
-          if [ -f tests/validate.sh ]; then
-            chmod +x tests/validate.sh
-            ./tests/validate.sh
-          else
-            printf 'No tests/validate.sh found in module, skipping\n'
-          fi
+          test -f tests/validate.sh
+          chmod +x tests/validate.sh
+          ./tests/validate.sh
 
       - name: Run optional smoke checks
         run: |
