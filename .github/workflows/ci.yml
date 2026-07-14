@@ -18,17 +18,20 @@ jobs:
       - name: Check out module
         uses: actions/checkout@v4
 
-      - name: Validate module metadata
+      - name: Install shell tooling
         run: |
-          test -f stack.module.json
-          test -f tests/validate.sh
-          chmod +x tests/validate.sh
-          ./tests/validate.sh
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends shellcheck
 
-      - name: Run optional smoke checks
+      - name: Check out shared module runner
+        env:
+          GENERATOR_REF: d9887bd9b53d3e1ae7ef7ce520fa3c1d7cd262dd
         run: |
-          if [ -x tests/smoke.sh ]; then
-            ./tests/smoke.sh
-          else
-            printf 'No tests/smoke.sh found in module, skipping\n'
-          fi
+          git init "$RUNNER_TEMP/sso-stack-generator"
+          git -C "$RUNNER_TEMP/sso-stack-generator" remote add origin https://github.com/platform-zero/sso-stack-generator.git
+          git -C "$RUNNER_TEMP/sso-stack-generator" fetch --depth 1 origin "$GENERATOR_REF"
+          git -C "$RUNNER_TEMP/sso-stack-generator" checkout --detach FETCH_HEAD
+
+      - name: Run module validation
+        run: |
+          "$RUNNER_TEMP/sso-stack-generator/scripts/test-module.sh" --all "$GITHUB_WORKSPACE"
