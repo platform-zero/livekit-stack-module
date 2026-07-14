@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
-test -f "$repo_root/stack.module.json"
-python3 - "$repo_root/stack.module.json" <<'PY'
-import json, sys
-with open(sys.argv[1], encoding="utf-8") as handle:
-    data = json.load(handle)
-for path in data.get("overlays", []):
-    import pathlib
-    if not (pathlib.Path(sys.argv[1]).parent / path).exists():
-        raise SystemExit(f"missing overlay: {path}")
-PY
+validator="${WEBSERVICES_MODULE_CONTRACT_VALIDATOR:-}"
+if [ -z "$validator" ]; then
+  for candidate in     "$repo_root/../../sso-stack-generator/scripts/modules/module-contract.sh"     "$repo_root/../sso-stack-generator/scripts/modules/module-contract.sh"; do
+    if [ -x "$candidate" ]; then
+      validator="$candidate"
+      break
+    fi
+  done
+fi
+[ -n "$validator" ] || { printf '[module-contract] set WEBSERVICES_MODULE_CONTRACT_VALIDATOR or keep sso-stack-generator next to modules workspace\n' >&2; exit 1; }
+exec "$validator" validate "$repo_root"

@@ -6,7 +6,7 @@
 - Lifecycle: `active`
 
 ## Owned overlays
-- `stack.compose/livekit.yml`
+- `stack.runtime.yaml`
 - `stack.config/livekit`
 
 ## Dependencies
