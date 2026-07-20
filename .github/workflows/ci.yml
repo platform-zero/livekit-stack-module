@@ -10,33 +10,8 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   validate:
-    name: Module validation
-    runs-on: ubuntu-24.04
-    timeout-minutes: 30
-    steps:
-      - name: Check out module
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-
-      - name: Install shell tooling
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends shellcheck
-
-      - name: Check out shared module runner
-        env:
-          GENERATOR_REF: 5192555a6c14de553d7f24a06368539a1058982d
-        run: |
-          git init "$RUNNER_TEMP/sso-stack-generator"
-          git -C "$RUNNER_TEMP/sso-stack-generator" remote add origin https://github.com/platform-zero/sso-stack-generator.git
-          git -C "$RUNNER_TEMP/sso-stack-generator" fetch --depth 1 origin "$GENERATOR_REF"
-          git -C "$RUNNER_TEMP/sso-stack-generator" checkout --detach FETCH_HEAD
-
-      - name: Run module validation
-        run: |
-          "$RUNNER_TEMP/sso-stack-generator/scripts/test-module.sh" --all "$GITHUB_WORKSPACE"
+    uses: platform-zero/.github/.github/workflows/module-ci.yml@f1fbbd3cbbf7778dbcb0955c2e4fe51366a2e7e3
+    with:
+      generator_ref: 90acc88e25815a797310fdb32bfbe3ace70c65c4

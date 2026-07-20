@@ -1,0 +1,17 @@
+name: Security CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - dev
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  security:
+    uses: platform-zero/.github/.github/workflows/security-ci.yml@f1fbbd3cbbf7778dbcb0955c2e4fe51366a2e7e3
+
