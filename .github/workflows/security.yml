@@ -13,5 +13,4 @@ permissions:
 
 jobs:
   security:
-    uses: platform-zero/.github/.github/workflows/security-ci.yml@f1fbbd3cbbf7778dbcb0955c2e4fe51366a2e7e3
-
+    uses: platform-zero/.github/.github/workflows/security-ci.yml@8690aa7cbdccaa74d3a84ccf8073678e8bc811de
