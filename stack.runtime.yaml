@@ -9,6 +9,7 @@ services:
     lifecycle: "daemon"
     updatePolicy: "registry"
     placement: "rootful"
+    hostNetwork: true
     networks:
     - "caddy"
     - "matrix-internal"
