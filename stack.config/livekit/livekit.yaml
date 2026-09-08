@@ -1,9 +1,9 @@
 port: 7880
-node_ip: "{{LIVEKIT_NODE_IP}}"
 bind_addresses:
   - ""
 
 rtc:
+  node_ip: "{{LIVEKIT_NODE_IP}}"
   tcp_port: 7881
   udp_port: 7882
   use_external_ip: false
