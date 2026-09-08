@@ -1,13 +1,12 @@
 port: 7880
+node_ip: "{{LIVEKIT_NODE_IP}}"
 bind_addresses:
   - ""
 
 rtc:
   tcp_port: 7881
   udp_port: 7882
-  # Rootless authority domains cannot route LiveKit's private container address.
-  # Advertise the host's externally reachable address to cross-domain clients.
-  use_external_ip: true
+  use_external_ip: false
 
 room:
   auto_create: false
